@@ -1,0 +1,52 @@
+name: Daily Job Search Briefing
+
+on:
+  schedule:
+    # 8:00 AM Pacific Time (15:00 UTC) - Morning Full Briefing (Jobs + Market News)
+    - cron: '0 15 * * *'
+    # 6:00 PM Pacific Time (01:00 UTC) - Evening Flash Alert (Jobs-Only with Zero-Spam Guard)
+    - cron: '0 1 * * *'
+  workflow_dispatch: # Allows manual trigger from GitHub Actions tab
+
+jobs:
+  dispatch-briefing:
+    runs-on: ubuntu-latest
+    name: Fetch & Send Job Search Briefing
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Restore SQLite Seen Jobs Cache
+        uses: actions/cache@v4
+        with:
+          path: projects/job-search/data/jobs.db
+          key: jobs-db-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: |
+            jobs-db-${{ runner.os }}-
+
+      - name: Run Job Search Radar (Morning Full Briefing or Evening Flash Alert)
+        env:
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
+        run: |
+          # If triggered by 01:00 UTC cron (6:00 PM PT), run flash jobs-only with Zero-Spam Guard
+          if [ "${{ github.event.schedule }}" = "0 1 * * *" ]; then
+            echo "⚡ Evening Flash Alert triggered (6:00 PM PT): running with --only-if-jobs --no-news"
+            python3 projects/job-search/run.py --send --only-if-jobs --no-news
+          else
+            echo "🌅 Morning Full Briefing triggered (8:00 AM PT): running with news digest"
+            python3 projects/job-search/run.py --send
+          fi
+
+      - name: Save Updated SQLite Cache
+        uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: projects/job-search/data/jobs.db
+          key: jobs-db-${{ runner.os }}-${{ github.run_id }}

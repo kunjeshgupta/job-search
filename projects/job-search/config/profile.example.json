@@ -1,0 +1,21 @@
+{
+  "name": "Alex Taylor",
+  "recipient_email": "candidate@example.com",
+  "university": "State University",
+  "university_short": "Alumni",
+  "school_motto": "",
+  "degree_program": "Master of Science",
+  "work_auth_status": "F-1 Student (CPT / STEM OPT)",
+  "experience_hook": "Prior to graduate school, I worked in analytics and product operations building automated dashboards.",
+  "primary_track": "Internship",
+  "target_roles": [
+    "Product Management Intern",
+    "Product Analyst Intern",
+    "Business Analyst Intern",
+    "Data Science Intern",
+    "Data Analyst Intern",
+    "Associate Product Manager",
+    "Product Analyst",
+    "Business Analyst"
+  ]
+}

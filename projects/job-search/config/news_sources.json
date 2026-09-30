@@ -1,0 +1,32 @@
+[
+  {
+    "name": "TechCrunch Fintech",
+    "url": "https://techcrunch.com/category/fintech/feed/",
+    "category": "Fintech & Payments",
+    "max_items": 3
+  },
+  {
+    "name": "Finextra News",
+    "url": "https://www.finextra.com/rss/headlines.aspx",
+    "category": "Banking & Payment Tech",
+    "max_items": 2
+  },
+  {
+    "name": "The Block",
+    "url": "https://www.theblock.co/rss.xml",
+    "category": "Crypto & Digital Assets",
+    "max_items": 2
+  },
+  {
+    "name": "TechCrunch AI",
+    "url": "https://techcrunch.com/category/artificial-intelligence/feed/",
+    "category": "Frontier AI & Tech",
+    "max_items": 3
+  },
+  {
+    "name": "Electrek",
+    "url": "https://electrek.co/feed/",
+    "category": "Automotive Tech & EVs",
+    "max_items": 2
+  }
+]
