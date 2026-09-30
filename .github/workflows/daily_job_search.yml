@@ -2,10 +2,10 @@ name: Daily Job Search Briefing
 
 on:
   schedule:
-    # 8:00 AM Pacific Time (15:00 UTC) - Morning Full Briefing (Jobs + Market News)
-    - cron: '0 15 * * *'
-    # 6:00 PM Pacific Time (01:00 UTC) - Evening Flash Alert (Jobs-Only with Zero-Spam Guard)
-    - cron: '0 1 * * *'
+    # 8:05 AM Pacific Time (15:05 UTC) - Morning Full Briefing (Offset by 5m to avoid top-of-hour congestion)
+    - cron: '5 15 * * *'
+    # 6:05 PM Pacific Time (01:05 UTC) - Evening Flash Alert (Offset by 5m to avoid top-of-hour congestion)
+    - cron: '5 1 * * *'
   workflow_dispatch: # Allows manual trigger from GitHub Actions tab
 
 jobs:
@@ -35,12 +35,12 @@ jobs:
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
           RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
         run: |
-          # If triggered by 01:00 UTC cron (6:00 PM PT), run flash jobs-only with Zero-Spam Guard
-          if [ "${{ github.event.schedule }}" = "0 1 * * *" ]; then
-            echo "⚡ Evening Flash Alert triggered (6:00 PM PT): running with --only-if-jobs --no-news"
+          # If triggered by 01:05 UTC cron (6:05 PM PT), run flash jobs-only with Zero-Spam Guard
+          if [ "${{ github.event.schedule }}" = "5 1 * * *" ]; then
+            echo "⚡ Evening Flash Alert triggered (6:05 PM PT): running with --only-if-jobs --no-news"
             python3 run.py --send --only-if-jobs --no-news
           else
-            echo "🌅 Morning Full Briefing triggered (8:00 AM PT): running with news digest"
+            echo "🌅 Morning Full Briefing triggered (8:05 AM PT): running with news digest"
             python3 run.py --send
           fi
 
