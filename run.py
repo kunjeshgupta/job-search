@@ -32,6 +32,7 @@ def main():
     parser.add_argument("--dry-run", action="store_true", help="Run without sending email (default)", default=True)
     parser.add_argument("--include-seen", action="store_true", help="Include previously seen jobs for testing")
     parser.add_argument("--max-age", type=int, default=30, help="Maximum job age in days (default: 30)")
+    parser.add_argument("--limit", type=int, default=25, help="Maximum number of jobs to display in one email (default: 25)")
     parser.add_argument("--only-if-jobs", action="store_true", help="Only dispatch email if at least one new job is found (Zero-Spam Guard)")
     parser.add_argument("--no-news", action="store_true", help="Skip market news (flash alert mode)")
     args = parser.parse_args()
@@ -99,8 +100,9 @@ def main():
         news_items = fetch_curated_market_intelligence()
         print(f"   Retrieved {len(news_items)} market news stories.")
 
-    # 6. Build outputs with exact synchronized counts
-    display_jobs = matched_jobs[:10]
+    # 6. Build outputs with exact synchronized counts (capped by --limit)
+    display_jobs = matched_jobs[:args.limit]
+    remaining_count = max(0, len(matched_jobs) - len(display_jobs))
     terminal_output = format_terminal_markdown(display_jobs, news_items)
     html_output = format_html_email(display_jobs, news_items)
 
@@ -114,21 +116,24 @@ def main():
     print("\n" + terminal_output + "\n")
     print(f"💾 Full HTML briefing saved to: {preview_path}")
 
-    # 9. Dispatch email if requested (subject strictly matches display_jobs count)
+    # 9. Dispatch email if requested (subject reflects display count and any queued backlog)
     if args.send:
         now_str = datetime.now().strftime("%b %d")
+        queue_badge = f" • +{remaining_count} Queued" if remaining_count > 0 else ""
         if args.no_news:
-            subject = f"⚡ Flash Job Alert ({len(display_jobs)} New Target Roles) — {now_str}"
+            subject = f"⚡ Flash Job Alert ({len(display_jobs)} New Target Roles{queue_badge}) — {now_str}"
         else:
-            subject = f"🎓 Job Search Radar ({len(display_jobs)} Fresh Roles) & Student Briefing — {now_str}"
+            subject = f"🎓 Job Search Radar ({len(display_jobs)} Fresh Roles{queue_badge}) & Student Briefing — {now_str}"
         print(f"\n📧 Sending email to recipient...")
         res = send_email_via_resend(subject, html_output)
         print(f"   Result: {res.get('status')} - {res.get('message')}")
 
-    # 10. Mark jobs as seen
-    if matched_jobs and not args.include_seen:
-        mark_jobs_as_seen(matched_jobs)
-        print(f"✅ Marked {len(matched_jobs)} jobs as seen in database.")
+    # 10. Mark ONLY displayed jobs as seen so remaining queued jobs flow into the next 4-hour cycle
+    if display_jobs and not args.include_seen:
+        mark_jobs_as_seen(display_jobs)
+        print(f"✅ Marked {len(display_jobs)} displayed jobs as seen in database.")
+        if remaining_count > 0:
+            print(f"⏳ {remaining_count} additional matching jobs remain queued for subsequent briefings.")
 
     print("🏁 Job Search run finished.\n")
 
