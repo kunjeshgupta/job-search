@@ -3,6 +3,7 @@
 import json
 import os
 import ssl
+import urllib.parse
 import urllib.request
 from typing import List, Dict, Any
 
@@ -129,6 +130,54 @@ def fetch_ashby_jobs(company_name: str, slug: str, h1b_status: str = "H-1B Spons
     return jobs
 
 
+def fetch_amazon_jobs(
+    company_name: str = "Amazon",
+    h1b_status: str = "Top H-1B Sponsor (#1 Filer)",
+) -> List[Dict[str, Any]]:
+    """Fetches student, intern, analytics, and PM roles from amazon.jobs public API."""
+    queries = ["intern", "product manager", "business analyst", "data analyst", "data science"]
+    seen_ids = set()
+    jobs = []
+    headers = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"}
+
+    for q in queries:
+        try:
+            encoded_q = urllib.parse.quote_plus(q)
+            url = f"https://www.amazon.jobs/en/search.json?base_query={encoded_q}&country=USA&result_limit=25"
+            req = urllib.request.Request(url, headers=headers)
+            with urllib.request.urlopen(req, context=get_ssl_context(), timeout=10) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+                for j in data.get("jobs", []):
+                    jid = str(j.get("id_icims") or j.get("id") or "")
+                    if not jid or jid in seen_ids:
+                        continue
+                    seen_ids.add(jid)
+
+                    loc = j.get("location") or j.get("normalized_location") or "USA"
+                    basic_qual = j.get("basic_qualifications") or ""
+                    pref_qual = j.get("preferred_qualifications") or ""
+                    desc = j.get("description") or j.get("description_short") or ""
+                    full_content = f"{desc}\n\nBasic Qualifications:\n{basic_qual}\n\nPreferred Qualifications:\n{pref_qual}"
+
+                    job_path = j.get("job_path", "")
+                    apply_url = f"https://www.amazon.jobs{job_path}" if job_path.startswith("/") else job_path
+
+                    jobs.append({
+                        "id": f"amazon_{jid}",
+                        "company": company_name,
+                        "title": j.get("title", "").strip(),
+                        "location": loc,
+                        "url": apply_url,
+                        "content": full_content,
+                        "h1b_status": h1b_status,
+                        "posted_at": j.get("posted_date", ""),
+                    })
+        except Exception:
+            pass
+
+    return jobs
+
+
 def fetch_all_jobs() -> List[Dict[str, Any]]:
     targets = load_targets()
     all_jobs = []
@@ -145,5 +194,7 @@ def fetch_all_jobs() -> List[Dict[str, Any]]:
             all_jobs.extend(fetch_lever_jobs(name, slug, h1b_status))
         elif ats == "ashby":
             all_jobs.extend(fetch_ashby_jobs(name, slug, h1b_status))
+        elif ats == "amazon":
+            all_jobs.extend(fetch_amazon_jobs(name, h1b_status))
 
     return all_jobs

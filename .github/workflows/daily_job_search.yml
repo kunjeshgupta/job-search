@@ -1,11 +1,9 @@
-name: Daily Job Search Briefing
+name: Job Search Radar & Briefing
 
 on:
   schedule:
-    # 8:05 AM Pacific Time (15:05 UTC) - Morning Full Briefing (Offset by 5m to avoid top-of-hour congestion)
-    - cron: '5 15 * * *'
-    # 6:05 PM Pacific Time (01:05 UTC) - Evening Flash Alert (Offset by 5m to avoid top-of-hour congestion)
-    - cron: '5 1 * * *'
+    # Testing Cadence: Run every 4 hours at :05 past the hour (00:05, 04:05, 08:05, 12:05, 16:05, 20:05 UTC)
+    - cron: '5 */4 * * *'
   workflow_dispatch: # Allows manual trigger from GitHub Actions tab
 
 jobs:
@@ -30,7 +28,7 @@ jobs:
           restore-keys: |
             jobs-db-${{ runner.os }}-
 
-      - name: Run Job Search Radar (Morning Full Briefing or Evening Flash Alert)
+      - name: Run Job Search Radar (4-Hour Briefing Digest)
         env:
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
           RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
@@ -38,14 +36,8 @@ jobs:
           TARGET_COMPANIES: ${{ secrets.TARGET_COMPANIES }}
           TARGET_ROLES: ${{ secrets.TARGET_ROLES }}
         run: |
-          # If triggered by 01:05 UTC cron (6:05 PM PT), run flash jobs-only with Zero-Spam Guard
-          if [ "${{ github.event.schedule }}" = "5 1 * * *" ]; then
-            echo "⚡ Evening Flash Alert triggered (6:05 PM PT): running with --only-if-jobs --no-news"
-            python3 run.py --send --only-if-jobs --no-news
-          else
-            echo "🌅 Morning Full Briefing triggered (8:05 AM PT): running with news digest"
-            python3 run.py --send
-          fi
+          echo "⏱️ 4-Hour Testing Cadence: fetching positions across target companies and sending briefing email..."
+          python3 run.py --send
 
       - name: Save Updated SQLite Cache
         uses: actions/cache/save@v4
