@@ -31,6 +31,18 @@ The wizard will guide you through:
 6. **Pitch Hook**: 1-sentence summary of your past achievements (dynamically embedded into match notes).
 7. **Email Delivery**: Optional Resend API key for inbox delivery (free at [resend.com](https://resend.com)).
 
+### Manual Commands
+```bash
+# Preview briefing in terminal + save local HTML
+python3 run.py --dry-run
+
+# Run live email dispatch
+python3 run.py --send
+
+# Run evening flash alert (only sends if fresh roles exist, skips news)
+python3 run.py --send --only-if-jobs --no-news
+```
+
 ---
 
 ## ⚡ Daily Automation (GitHub Actions)

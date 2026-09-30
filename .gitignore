@@ -60,10 +60,10 @@ scratch/
 *.db
 *.sqlite
 *.sqlite3
-projects/job-search/data/latest_briefing.html
-projects/job-search/logs/
-projects/job-search/config/profile.json
-!projects/job-search/config/profile.example.json
+data/latest_briefing.html
+logs/
+config/profile.json
+!config/profile.example.json
 # Antigravity Workspace & Agent Governance (Private to local machine)
 .agents/
 docs/
