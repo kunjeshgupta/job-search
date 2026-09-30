@@ -10,14 +10,39 @@ CONFIG_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "config")
 TARGETS_FILE = os.path.join(CONFIG_DIR, "targets.json")
 
 
+EXAMPLE_TARGETS_FILE = os.path.join(CONFIG_DIR, "targets.example.json")
+
+
 def get_ssl_context():
     return ssl._create_unverified_context()
 
 
 def load_targets() -> List[Dict[str, Any]]:
+    """Loads target companies from environment JSON (GitHub Actions Secret), targets.json, or targets.example.json."""
+    # 1. Check if TARGET_COMPANIES is passed via environment (GitHub Actions Secret)
+    env_targets = os.environ.get("TARGET_COMPANIES")
+    if env_targets:
+        try:
+            return json.loads(env_targets)
+        except Exception:
+            pass
+
+    # 2. Check local config/targets.json (on local Mac)
     if os.path.exists(TARGETS_FILE):
-        with open(TARGETS_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
+        try:
+            with open(TARGETS_FILE, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            pass
+
+    # 3. Fallback to targets.example.json
+    if os.path.exists(EXAMPLE_TARGETS_FILE):
+        try:
+            with open(EXAMPLE_TARGETS_FILE, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            pass
+
     return []
 
 

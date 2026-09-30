@@ -1,0 +1,64 @@
+{
+  "target_roles": [
+    "Product Management Intern",
+    "Product Manager Intern",
+    "APM Intern",
+    "Associate Product Manager",
+    "Product Analyst Intern",
+    "Business Analyst Intern",
+    "Data Science Intern",
+    "Data Analyst Intern"
+  ],
+  "experience_level": {
+    "min_years": 0,
+    "max_years": 3,
+    "target_bands": [
+      "Internship",
+      "Summer Intern",
+      "Graduate Intern",
+      "University Graduate",
+      "New Grad",
+      "Early Career (0-2 yrs)",
+      "Associate"
+    ]
+  },
+  "positive_keywords": [
+    "product management intern",
+    "product intern",
+    "apm intern",
+    "product analyst",
+    "business analyst",
+    "associate product manager",
+    "apm",
+    "data analyst",
+    "data science intern",
+    "data scientist"
+  ],
+  "negative_keywords": [
+    "senior",
+    "sr.",
+    "sr ",
+    "staff",
+    "principal",
+    "director",
+    "vp",
+    "vice president",
+    "head of",
+    "chief",
+    "lead",
+    "group product manager",
+    "gpm",
+    "5+ years",
+    "6+ years",
+    "7+ years",
+    "8+ years",
+    "10+ years",
+    "phd",
+    "doctorate",
+    "software engineer",
+    "swe",
+    "backend",
+    "frontend",
+    "full stack"
+  ]
+}

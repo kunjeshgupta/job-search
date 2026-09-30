@@ -64,6 +64,10 @@ data/latest_briefing.html
 logs/
 config/profile.json
 !config/profile.example.json
+config/targets.json
+!config/targets.example.json
+config/roles.json
+!config/roles.example.json
 # Antigravity Workspace & Agent Governance (Private to local machine)
 .agents/
 docs/

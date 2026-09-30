@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Acme Tech",
+    "ats": "greenhouse",
+    "slug": "acme",
+    "category": "Technology & Platforms",
+    "h1b_status": "Top H-1B Sponsor",
+    "priority": "High"
+  },
+  {
+    "name": "Global Payments",
+    "ats": "greenhouse",
+    "slug": "globalpayments",
+    "category": "Fintech & Payments",
+    "h1b_status": "H-1B Sponsor",
+    "priority": "High"
+  },
+  {
+    "name": "Frontier AI Labs",
+    "ats": "ashby",
+    "slug": "frontier-ai",
+    "category": "Frontier AI",
+    "h1b_status": "Top H-1B Sponsor",
+    "priority": "High"
+  }
+]

@@ -11,12 +11,35 @@ from src.profile_loader import load_user_profile
 
 CONFIG_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "config")
 ROLES_CONFIG = os.path.join(CONFIG_DIR, "roles.json")
+EXAMPLE_ROLES_CONFIG = os.path.join(CONFIG_DIR, "roles.example.json")
 
 
 def load_roles_config() -> dict:
+    """Loads roles configuration from environment JSON (GitHub Actions Secret), roles.json, or roles.example.json."""
+    # 1. Check if TARGET_ROLES is passed via environment (GitHub Actions Secret)
+    env_roles = os.environ.get("TARGET_ROLES")
+    if env_roles:
+        try:
+            return json.loads(env_roles)
+        except Exception:
+            pass
+
+    # 2. Check local config/roles.json (on local Mac)
     if os.path.exists(ROLES_CONFIG):
-        with open(ROLES_CONFIG, "r", encoding="utf-8") as f:
-            return json.load(f)
+        try:
+            with open(ROLES_CONFIG, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            pass
+
+    # 3. Fallback to roles.example.json
+    if os.path.exists(EXAMPLE_ROLES_CONFIG):
+        try:
+            with open(EXAMPLE_ROLES_CONFIG, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            pass
+
     return {}
 
 
